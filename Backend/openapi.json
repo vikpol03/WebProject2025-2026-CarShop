@@ -1,0 +1,287 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CarShop Backend API",
+    "version": "1.0.0",
+    "description": "CRUD API for WebProject2025-2026-CarShop (users, brands, models, cars, orders, order items, images, reviews)."
+  },
+  "servers": [
+    {
+      "url": "http://localhost/WebProject2025-2026-CarShop/Backend",
+      "description": "Local dev"
+    }
+  ],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "summary": "List users",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/User" }
+                    },
+                    "limit": { "type": "integer" },
+                    "offset": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Get user by id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }
+          },
+          "404": { "description": "Not found" }
+        }
+      },
+      "put": {
+        "summary": "Update user",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/UserUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateResult" } } }
+          },
+          "400": { "description": "Validation error" }
+        }
+      },
+      "delete": {
+        "summary": "Delete user",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeleteResult" } } }
+          }
+        }
+      }
+    },
+
+    "/api/brands":      { "$ref": "#/components/x-crud/BrandsCollection" },
+    "/api/brands/{id}": { "$ref": "#/components/x-crud/BrandsItem" },
+    "/api/models":      { "$ref": "#/components/x-crud/ModelsCollection" },
+    "/api/models/{id}": { "$ref": "#/components/x-crud/ModelsItem" },
+    "/api/cars":        { "$ref": "#/components/x-crud/CarsCollection" },
+    "/api/cars/{id}":   { "$ref": "#/components/x-crud/CarsItem" },
+    "/api/orders":      { "$ref": "#/components/x-crud/OrdersCollection" },
+    "/api/orders/{id}": { "$ref": "#/components/x-crud/OrdersItem" },
+    "/api/order-items": { "$ref": "#/components/x-crud/OrderItemsCollection" },
+    "/api/order-items/{id}": { "$ref": "#/components/x-crud/OrderItemsItem" },
+    "/api/images":      { "$ref": "#/components/x-crud/ImagesCollection" },
+    "/api/images/{id}": { "$ref": "#/components/x-crud/ImagesItem" },
+    "/api/reviews":     { "$ref": "#/components/x-crud/ReviewsCollection" },
+    "/api/reviews/{id}":{ "$ref": "#/components/x-crud/ReviewsItem" }
+  },
+
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "integer" },
+          "email": { "type": "string", "format": "email" },
+          "full_name": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "UserCreate": {
+        "type": "object",
+        "required": ["email", "password", "full_name"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 },
+          "full_name": { "type": "string" }
+        }
+      },
+      "UserUpdate": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 },
+          "full_name": { "type": "string" }
+        }
+      },
+
+      "Brand": {
+        "type": "object",
+        "properties": {
+          "brand_id": { "type": "integer" },
+          "name": { "type": "string" },
+          "country": { "type": "string", "nullable": true }
+        }
+      },
+
+      "Model": {
+        "type": "object",
+        "properties": {
+          "model_id": { "type": "integer" },
+          "brand_id": { "type": "integer" },
+          "name": { "type": "string" },
+          "year_from": { "type": "integer", "nullable": true },
+          "year_to": { "type": "integer", "nullable": true }
+        }
+      },
+
+      "Car": {
+        "type": "object",
+        "properties": {
+          "car_id": { "type": "integer" },
+          "model_id": { "type": "integer" },
+          "vin": { "type": "string" },
+          "trim": { "type": "string", "nullable": true },
+          "color": { "type": "string", "nullable": true },
+          "transmission": { "type": "string" },
+          "mileage_km": { "type": "integer" },
+          "price": { "type": "number", "format": "float" },
+          "in_stock": { "type": "integer" }
+        }
+      },
+
+      "Order": {
+        "type": "object",
+        "properties": {
+          "order_id": { "type": "integer" },
+          "user_id": { "type": "integer" },
+          "order_date": { "type": "string", "format": "date-time" },
+          "status": { "type": "string" },
+          "total_amount": { "type": "number", "format": "float" }
+        }
+      },
+
+      "OrderItem": {
+        "type": "object",
+        "properties": {
+          "order_item_id": { "type": "integer" },
+          "order_id": { "type": "integer" },
+          "car_id": { "type": "integer" },
+          "quantity": { "type": "integer" },
+          "unit_price": { "type": "number", "format": "float" },
+          "line_total": { "type": "number", "format": "float" }
+        }
+      },
+
+      "Image": {
+        "type": "object",
+        "properties": {
+          "image_id": { "type": "integer" },
+          "car_id": { "type": "integer" },
+          "url": { "type": "string" },
+          "is_primary": { "type": "integer" }
+        }
+      },
+
+      "Review": {
+        "type": "object",
+        "properties": {
+          "review_id": { "type": "integer" },
+          "user_id": { "type": "integer" },
+          "car_id": { "type": "integer" },
+          "rating": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "comment": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "UpdateResult": {
+        "type": "object",
+        "properties": {
+          "updated": { "type": "boolean" }
+        }
+      },
+      "DeleteResult": {
+        "type": "object",
+        "properties": {
+          "deleted": { "type": "boolean" }
+        }
+      }
+    },
+
+    "x-crud": {
+      "BrandsCollection": {
+        "get": { "summary": "List brands", "responses": { "200": { "description": "OK" } } },
+        "post": { "summary": "Create brand", "responses": { "201": { "description": "Created" } } }
+      },
+      "BrandsItem": {
+        "get": { "summary": "Get brand", "responses": { "200": { "description": "OK" } } },
+        "put": { "summary": "Update brand", "responses": { "200": { "description": "OK" } } },
+        "delete": { "summary": "Delete brand", "responses": { "200": { "description": "OK" } } }
+      },
+
+      "ModelsCollection":  { "get": { "summary": "List models", "responses": { "200": { "description": "OK" } } }, "post": { "summary": "Create model", "responses": { "201": { "description": "Created" } } } },
+      "ModelsItem":        { "get": { "summary": "Get model", "responses": { "200": { "description": "OK" } } }, "put": { "summary": "Update model", "responses": { "200": { "description": "OK" } } }, "delete": { "summary": "Delete model", "responses": { "200": { "description": "OK" } } } },
+
+      "CarsCollection":    { "get": { "summary": "List cars", "responses": { "200": { "description": "OK" } } }, "post": { "summary": "Create car", "responses": { "201": { "description": "Created" } } } },
+      "CarsItem":          { "get": { "summary": "Get car", "responses": { "200": { "description": "OK" } } }, "put": { "summary": "Update car", "responses": { "200": { "description": "OK" } } }, "delete": { "summary": "Delete car", "responses": { "200": { "description": "OK" } } } },
+
+      "OrdersCollection":  { "get": { "summary": "List orders", "responses": { "200": { "description": "OK" } } }, "post": { "summary": "Create order", "responses": { "201": { "description": "Created" } } } },
+      "OrdersItem":        { "get": { "summary": "Get order", "responses": { "200": { "description": "OK" } } }, "put": { "summary": "Update order", "responses": { "200": { "description": "OK" } } }, "delete": { "summary": "Delete order", "responses": { "200": { "description": "OK" } } } },
+
+      "OrderItemsCollection": { "get": { "summary": "List order items", "responses": { "200": { "description": "OK" } } }, "post": { "summary": "Create order item", "responses": { "201": { "description": "Created" } } } },
+      "OrderItemsItem":       { "get": { "summary": "Get order item", "responses": { "200": { "description": "OK" } } }, "put": { "summary": "Update order item", "responses": { "200": { "description": "OK" } } }, "delete": { "summary": "Delete order item", "responses": { "200": { "description": "OK" } } } },
+
+      "ImagesCollection":  { "get": { "summary": "List images", "responses": { "200": { "description": "OK" } } }, "post": { "summary": "Create image", "responses": { "201": { "description": "Created" } } } },
+      "ImagesItem":        { "get": { "summary": "Get image", "responses": { "200": { "description": "OK" } } }, "put": { "summary": "Update image", "responses": { "200": { "description": "OK" } } }, "delete": { "summary": "Delete image", "responses": { "200": { "description": "OK" } } } },
+
+      "ReviewsCollection": { "get": { "summary": "List reviews", "responses": { "200": { "description": "OK" } } }, "post": { "summary": "Create review", "responses": { "201": { "description": "Created" } } } },
+      "ReviewsItem":       { "get": { "summary": "Get review", "responses": { "200": { "description": "OK" } } }, "put": { "summary": "Update review", "responses": { "200": { "description": "OK" } } }, "delete": { "summary": "Delete review", "responses": { "200": { "description": "OK" } } } }
+    }
+  }
+}
